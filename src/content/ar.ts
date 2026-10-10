@@ -249,7 +249,7 @@ const ar: Dictionary = {
     language: "اللغة",
     current: "العربية",
     other: "English",
-    copyright: "© 2026 Ingen. سابقًا نَشر.",
+    copyright: "© 2026 Ingen.",
     top: "العودة إلى الأعلى",
   },
 

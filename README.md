@@ -1,6 +1,6 @@
 # Ingen website
 
-Website for Ingen (ingensolutions.com), formerly NASHR. English and Arabic.
+Website for Ingen (ingensolutions.com). English and Arabic.
 
 ```bash
 npm install

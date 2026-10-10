@@ -2,7 +2,7 @@
 
 # Ingen website — project brief
 
-This repo is the new website for **Ingen** (formerly NASHR, nashr.net), a
+This repo is the new website for **Ingen**, a
 Riyadh-based software and AI company. The new domain is **ingensolutions.com**.
 The homepage (English and Arabic) is built and approved. The next job is to
 redesign the rest of the old nashr.net site in the same system.
