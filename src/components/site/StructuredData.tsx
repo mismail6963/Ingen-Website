@@ -5,8 +5,7 @@ import { SITE_URL } from "@/lib/site";
 /**
  * JSON-LD for search engines: the Organization and the WebSite, linked by @id.
  * Keep it to facts the copy rules allow (no contact details, founding year,
- * prices or clients until the client supplies them). "NASHR" stays as an
- * alternate name so search engines connect the old brand to the new one.
+ * prices or clients until the client supplies them).
  */
 export function StructuredData({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
@@ -15,7 +14,6 @@ export function StructuredData({ locale }: { locale: Locale }) {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
       name: "Ingen",
-      alternateName: ["NASHR", "نَشر"],
       url: SITE_URL,
       logo: `${SITE_URL}/brand/Ingen-Icon-Vermilion.svg`,
       description: t.meta.description,

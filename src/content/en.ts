@@ -245,7 +245,7 @@ const en = {
     language: "Language",
     current: "English",
     other: "العربية",
-    copyright: "© 2026 Ingen. Formerly NASHR.",
+    copyright: "© 2026 Ingen.",
     top: "Back to top",
   },
 
