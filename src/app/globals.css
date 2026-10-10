@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/*
+ * Ingen brand tokens.
+ * Core palette (approved): vermilion, charcoal, white, surface, divider, muted.
+ * The remaining values are tints used by the approved v4 homepage design.
+ * Add new colours here, never inline in components.
+ */
+@theme {
+  --color-vermilion: #c93c2b;
+  --color-vermilion-deep: #a93222; /* hover state and small vermilion text on light backgrounds */
+  --color-vermilion-soft: #e07a6d; /* small vermilion text on dark backgrounds */
+  --color-charcoal: #202322;
+  --color-charcoal-hover: #3a3e3c;
+  --color-ink: #141615; /* services panel */
+  --color-ink-photo: #1b1d1c; /* behind photography */
+  --color-surface: #f4f4f1;
+  --color-surface-hover: #ecece8;
+  --color-divider: #d9dcd8;
+  --color-hairline: #e4e6e3;
+  --color-line-strong: #b4b8b6; /* form borders, dotted rules */
+  --color-muted: #666a68; /* secondary text on light backgrounds */
+  --color-soft: #444847; /* long-form answers on light backgrounds */
+  --color-on-dark: #edeeec;
+  --color-on-dark-muted: #c9ccca;
+  --color-placeholder: #8a8e8c;
+
+  --font-sans: var(--font-ingen), "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-arabic: var(--font-plex-arabic), system-ui, sans-serif;
+
+  --radius-panel: clamp(16px, 1.8vw, 26px);
+  --gutter: clamp(16px, 4vw, 48px);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: var(--color-charcoal);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Arabic: Ingen Sans covers Latin only, so Arabic glyphs fall back to IBM Plex Sans Arabic. */
+  html[lang="ar"] body {
+    font-family: var(--font-ingen), var(--font-plex-arabic), system-ui, sans-serif;
+    line-height: 1.8;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  button {
+    cursor: pointer;
+    font: inherit;
+  }
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+  ::placeholder {
+    color: var(--color-placeholder);
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-vermilion);
+    outline-offset: 3px;
+  }
+  .on-dark :focus-visible {
+    outline-color: #ffffff;
+  }
+}
+
+@layer components {
+  /* Standard page width: 1280px of content plus a responsive side gutter. */
+  .page-container {
+    margin-inline: auto;
+    max-width: calc(1280px + 2 * var(--gutter));
+    padding-inline: var(--gutter);
+  }
+
+  /* Service rows: whole row is the button; arrow is the visible affordance. */
+  .svc-row {
+    transition: background-color 0.2s ease;
+  }
+  .svc-row .svc-arrow {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+  .svc-row:hover {
+    background: rgb(255 255 255 / 0.035);
+  }
+  .svc-row:hover .svc-arrow,
+  .svc-row:focus-visible .svc-arrow {
+    background: var(--color-vermilion);
+    border-color: var(--color-vermilion);
+    transform: translateX(3px);
+  }
+  [dir="rtl"] .svc-row:hover .svc-arrow,
+  [dir="rtl"] .svc-row:focus-visible .svc-arrow {
+    transform: translateX(-3px);
+  }
+  .svc-row:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: -3px;
+    border-radius: 12px;
+  }
+
+  /* Approval stepper: four columns, vertical list on phones. */
+  @media (max-width: 640px) {
+    .stepper {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+    }
+    .stepper > * {
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    .step-line {
+      display: none !important;
+    }
+  }
+
+  .photo-mirror {
+    transform: scaleX(-1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .svc-row:hover .svc-arrow,
+  .svc-row:focus-visible .svc-arrow {
+    transform: none !important;
+  }
+}
