@@ -1,21 +1,22 @@
 import { getDictionary } from "@/content";
 import type { Locale } from "@/lib/i18n";
-import { SITE_URL } from "@/lib/site";
+import { absoluteUrl, SITE_URL } from "@/lib/site";
 
 /**
  * JSON-LD for search engines: the Organization and the WebSite, linked by @id.
  * Keep it to facts the copy rules allow (no contact details, founding year,
- * prices or clients until the client supplies them).
+ * prices, clients or social profiles until the client supplies them).
  */
 export function StructuredData({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
+  const orgId = `${SITE_URL}/#organization`;
   const graph = [
     {
       "@type": "Organization",
-      "@id": `${SITE_URL}/#organization`,
+      "@id": orgId,
       name: "Ingen",
       url: SITE_URL,
-      logo: `${SITE_URL}/brand/Ingen-Icon-Vermilion.svg`,
+      logo: { "@type": "ImageObject", url: absoluteUrl("/brand/Ingen-Lockup-Primary.svg") },
       description: t.meta.description,
       address: { "@type": "PostalAddress", addressLocality: "Riyadh", addressCountry: "SA" },
       knowsLanguage: ["en", "ar"],
@@ -26,7 +27,7 @@ export function StructuredData({ locale }: { locale: Locale }) {
       url: SITE_URL,
       name: "Ingen",
       inLanguage: ["en", "ar"],
-      publisher: { "@id": `${SITE_URL}/#organization` },
+      publisher: { "@id": orgId },
     },
   ];
 

@@ -1,15 +1,20 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/lib/i18n";
-import { SITE_URL } from "@/lib/site";
+import { absoluteUrl, localePath } from "@/lib/site";
 
-/** Add each new page here (one entry per path, with both languages). */
+/** Add each new public page here (one entry per path, with both languages). */
 const paths = [""];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return paths.flatMap((p) =>
     locales.map((lang) => ({
-      url: `${SITE_URL}/${lang}${p}`,
-      alternates: { languages: Object.fromEntries(locales.map((l) => [l, `${SITE_URL}/${l}${p}`])) },
+      url: absoluteUrl(localePath(lang, p)),
+      alternates: {
+        languages: {
+          ...Object.fromEntries(locales.map((l) => [l, absoluteUrl(localePath(l, p))])),
+          "x-default": absoluteUrl(localePath("en", p)),
+        },
+      },
     })),
   );
 }

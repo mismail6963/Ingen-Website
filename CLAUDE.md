@@ -3,9 +3,14 @@
 # Ingen website — project brief
 
 This repo is the new website for **Ingen**, a
-Riyadh-based software and AI company. The new domain is **ingensolutions.com**.
-The homepage (English and Arabic) is built and approved. The next job is to
-redesign the rest of the old nashr.net site in the same system.
+Riyadh-based software and AI company. The site is served from
+**https://www.ingensoloutions.com** (note the spelling; `ingensolutions.com`
+belongs to another company, so never "correct" it). The production origin is
+defined once, in `src/lib/site.ts`; moving to another domain is a business
+decision that needs a domain Ingen has confirmed it owns.
+The homepage (English and Arabic) is built and approved, and was revised in
+October 2026 after a website audit. The next job is to redesign the rest of the
+old nashr.net site in the same system.
 
 Read this whole file before changing anything. It is the source of truth for
 brand, copy rules and structure.
@@ -33,15 +38,16 @@ npx tsc --noEmit   # run `npx next typegen` first on a fresh clone
 ```
 src/
   app/
-    [lang]/layout.tsx     root layout per language: <html lang dir>, fonts, metadata
-    [lang]/page.tsx       homepage (section order is approved, do not reorder)
-    [lang]/not-found.tsx
+    [lang]/layout.tsx     root layout per language: <html lang dir>, fonts, shared metadata
+    [lang]/page.tsx       homepage (section order: see "Homepage" below)
+    [lang]/not-found.tsx  localized, branded 404
+    [lang]/[...rest]/     unknown /en/* and /ar/* paths → notFound() (real 404 status)
     api/enquiry/route.ts  enquiry form → email via Resend
     globals.css           brand tokens + the few custom CSS rules
     robots.ts, sitemap.ts, icon.svg
   components/
     home/                 homepage sections
-    site/                 Header, Footer (shared by every page)
+    site/                 Header (fixed), Footer, LanguageSwitch, StructuredData
     ui/                   Dialog (native <dialog>), Eyebrow, icons
   content/
     en.ts                 all English copy (the Dictionary shape)
@@ -49,16 +55,22 @@ src/
   lib/
     i18n.ts               locales, dir, alternate locale
     enquiry.ts            form validation shared by client and API
-    site.ts               SITE_URL
+    site.ts               SITE_URL (production origin), preview detection, OG image paths
+    metadata.ts           pageMetadata(): canonical, hreflang, Open Graph, Twitter per page
+    sections.ts           homepage section anchors in page order (nav, footer, language switch)
   proxy.ts                redirects un-prefixed paths to /en or /ar
   fonts/                  Ingen Sans + IBM Plex Sans Arabic (OFL licences included)
 public/
   brand/                  official logo SVGs, use unchanged
   photos/                 approved photography set (faces blurred)
+  og/                     1200×630 social images (scripts/generate-og-images.mjs)
+docs/
+  privacy-notice-draft.md DRAFT, not published: needs client facts + legal review
 ```
 
 **Every page lives under `/en/...` and `/ar/...`.** Add a page once in
-`src/app/[lang]/<route>/page.tsx` and put its copy in both dictionaries. Never
+`src/app/[lang]/<route>/page.tsx`, export `generateMetadata` returning
+`pageMetadata(lang, "/<route>")`, and put its copy in both dictionaries. Never
 hard-code customer-facing text in a component.
 
 Client components get copy by calling `getDictionary(locale)` themselves
@@ -87,8 +99,17 @@ small vermilion text on light backgrounds for contrast), `vermilion-soft`
 **Type**
 - Ingen Sans (custom, based on Sora): **Bold for headings, Regular for body.**
   Body copy 16–18px. Build hierarchy with size, weight and spacing.
-- Arabic: IBM Plex Sans Arabic (Ingen Sans has no Arabic glyphs; the font
-  stack falls back automatically). Arabic line-height is 1.8.
+- Arabic: IBM Plex Sans Arabic, placed **first** in the Arabic stack
+  (`--font-arabic`). It is an Arabic-only subset, so Latin letters and digits
+  fall through to Ingen Sans. Don't put `var(--font-ingen)` first for Arabic:
+  its built-in fallback is a local Arial, which has Arabic glyphs on Windows and
+  macOS and would win.
+- Use the type tokens, not raw px: `text-body` / `text-small` / `text-caption`
+  / `text-micro` and `leading-display` / `leading-title` / `leading-heading` /
+  `leading-body`. `html[lang="ar"]` swaps in the Arabic values (18px body,
+  1.8 body line-height, 1.3–1.45 headings) in `globals.css`.
+- No letter-spacing on Arabic: write tracking as `ltr:tracking-[…]`. Arabic
+  headings take no terminal full stop.
 
 **Logo**: use the SVGs in `public/brand/` exactly as supplied. White lockup on
 dark/photo backgrounds, Primary lockup (vermilion icon + charcoal) on light.
@@ -102,6 +123,12 @@ faces blurred, small human imperfections. Mirror photos in Arabic
 from the page edge (`--radius-panel`). Standard width is `.page-container`
 (1280px plus a responsive gutter). Mobile has a 16px gutter and no horizontal
 scroll. Touch targets are at least 44px.
+
+**Header**: one fixed header. Transparent on the hero photo at the top of the
+page, a compact 64px white bar (`--header-h`) once scrolled. `scroll-padding-top`
+keeps anchors and the enquiry form clear of it. Narrow screens show a short CTA
+label (`nav.ctaShort`) beside the menu button; below 350px the CTA lives only
+in the menu.
 
 ## Copy rules (non-negotiable)
 
@@ -120,8 +147,11 @@ Ingen has one real project and the client can't be named. So:
   the client supplies real ones.
 - Demonstrations are labelled **"Concept demonstration"** and use clearly
   sample data, with a note that they are not client projects.
-- The company statement is fixed: "A Riyadh-based software and AI company,
-  built around the needs of businesses and public-sector organisations."
+- The company statement was: "A Riyadh-based software and AI company,
+  built around the needs of businesses and public-sector organisations." Since
+  the October 2026 audit it is **not** shown as a homepage headline: don't
+  present public-sector work as established fact without evidence the client
+  has approved. "Riyadh-based software and AI company" is still used.
 - "Ingen" is never translated; it stays in Latin script in Arabic too.
 
 ## Arabic
@@ -136,10 +166,20 @@ Ingen has one real project and the client can't be named. So:
 
 ## Enquiry form
 
-- Every "Discuss your project" control calls `openForm()` from
-  `EnquiryProvider`, which opens the same form, scrolls to it and focuses the
-  Name field. New pages that need a contact action should use `<DiscussLink>`
-  or link to `/{lang}#enquiry`.
+- Every control that opens the form is labelled **"Tell us about your
+  project"** (`nav.cta`) and calls `openForm()` from `EnquiryProvider`, which
+  opens the same form, scrolls to it and focuses the Name field. New pages
+  that need a contact action should use `<DiscussLink>` or link to
+  `/{lang}#enquiry-form` (that hash opens the form on load).
+- Keep it short: three required fields (name, email, description) plus the
+  optional-details toggle. The file picker is a visually hidden native input
+  with a localized label as its button.
+- Success shows only after the API answers `{ ok: true }`. Repeat submits
+  are ignored while one is in flight; a 413 from the host maps to the
+  attachment-too-large message (Vercel's request body limit is about 4.5 MB,
+  slightly below the 5 MB the form allows).
+- Privacy: no approved privacy notice exists yet. Don't add a privacy link
+  until `docs/privacy-notice-draft.md` has been completed and approved.
 - `POST /api/enquiry` validates (same rules as the client), checks a
   honeypot, rate-limits per IP (best effort, in memory), and emails the
   enquiry through Resend with an optional attachment up to 5 MB.
@@ -150,11 +190,25 @@ Ingen has one real project and the client can't be named. So:
 
 ## Accessibility checklist (every page)
 
-Visible `:focus-visible` outlines, `aria-expanded` on toggles, dialogs via
+Visible `:focus-visible` outlines (neutral charcoal, white on dark; never
+vermilion, which means "error"), `aria-expanded` on toggles, dialogs via
 `ui/Dialog` (native `<dialog>`: focus trap, Escape, focus return), labelled
 form fields with inline errors and an error summary, `prefers-reduced-motion`
 respected, alt text on meaningful images (`alt=""` on decorative photos),
 contrast ≥ 4.5:1 for body text.
+
+## Homepage
+
+Section order (revised October 2026): hero, services, demo, how we work
+(delivery stages plus commitments; formerly separate Company and Approach
+sections), FAQ, enquiry. Navigation, footer and `SECTION_IDS` follow the same
+order. Verified proof, selected work and team sections, once the client
+supplies approved material, go after the hero, after the demo and after how we
+work respectively. Never add empty or placeholder versions of them.
+
+The language switch (`LanguageSwitch`) keeps the reader's place: it carries
+the URL fragment, or the section in view, to the other language. It never
+carries form data.
 
 ## Next: redesigning the rest of nashr.net
 
@@ -169,8 +223,9 @@ contrast ≥ 4.5:1 for body text.
    as the page's starting copy.
 4. Move Header and Footer into a shared layout once there is more than one
    page, and make in-page anchors (`#services`) become `/{lang}#services`
-   from other pages.
-5. Add each new path to `src/app/sitemap.ts`.
+   from other pages. LanguageSwitch then needs to keep the path, not only
+   the fragment.
+5. Add each new path to `src/app/sitemap.ts` and use `pageMetadata()`.
 6. Add redirects from old nashr.net URLs to their new homes (proxy.ts or
    `next.config.ts` redirects) when the domain moves.
 

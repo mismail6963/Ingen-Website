@@ -24,15 +24,58 @@
   --color-on-dark: #edeeec;
   --color-on-dark-muted: #c9ccca;
   --color-placeholder: #8a8e8c;
+  --color-field: #fafaf8; /* file picker background */
 
-  --font-sans: var(--font-ingen), "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-arabic: var(--font-plex-arabic), system-ui, sans-serif;
+  /*
+   * Font stacks. next/font puts each family's own fallbacks inside its
+   * variable, so order matters:
+   * - English: Ingen Sans, then its metric-matched fallback.
+   * - Arabic: IBM Plex Sans Arabic first (an Arabic-only subset, so Latin
+   *   letters and digits fall through to Ingen Sans), then Ingen's fallbacks.
+   */
+  --font-sans: var(--font-ingen);
+  --font-arabic: var(--font-plex-arabic), var(--font-ingen);
+
+  /*
+   * Type tokens. Values are for English; html[lang="ar"] below swaps in the
+   * Arabic values, so components use one class for both languages.
+   */
+  --text-body: 17px; /* standard body copy */
+  --text-small: 15px; /* secondary text, nav, labels */
+  --text-caption: 13px; /* hints, metadata */
+  --text-micro: 12px; /* uppercase badges */
+  --leading-display: 1.04; /* hero and closing headlines */
+  --leading-title: 1.1; /* section headings */
+  --leading-heading: 1.2; /* card and item headings */
+  --leading-body: 1.55; /* paragraphs */
 
   --radius-panel: clamp(16px, 1.8vw, 26px);
   --gutter: clamp(16px, 4vw, 48px);
 }
 
 @layer base {
+  /*
+   * Arabic typography: IBM Plex Sans Arabic needs more room than Ingen Sans.
+   * Larger body text, 1.8 body line-height and looser headings so dots and
+   * descenders never collide.
+   */
+  html[lang="ar"] {
+    --text-body: 18px;
+    --text-small: 16px;
+    --text-caption: 14px;
+    --text-micro: 13px;
+    --leading-display: 1.3;
+    --leading-title: 1.35;
+    --leading-heading: 1.45;
+    --leading-body: 1.8;
+  }
+
+  :root {
+    /* Fixed header height once scrolled; anchors and the enquiry form land below it. */
+    --header-h: 64px;
+    scroll-padding-top: calc(var(--header-h) + 16px);
+  }
+
   html {
     scroll-behavior: smooth;
   }
@@ -41,14 +84,12 @@
     background: #ffffff;
     color: var(--color-charcoal);
     font-family: var(--font-sans);
-    font-size: 17px;
-    line-height: 1.55;
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     -webkit-font-smoothing: antialiased;
   }
-  /* Arabic: Ingen Sans covers Latin only, so Arabic glyphs fall back to IBM Plex Sans Arabic. */
   html[lang="ar"] body {
-    font-family: var(--font-ingen), var(--font-plex-arabic), system-ui, sans-serif;
-    line-height: 1.8;
+    font-family: var(--font-arabic);
   }
   a {
     color: inherit;
@@ -66,12 +107,24 @@
   ::placeholder {
     color: var(--color-placeholder);
   }
+  /*
+   * Focus: a neutral charcoal ring with a white gap, so it reads on any light
+   * surface and is never confused with the vermilion used for errors.
+   */
   :focus-visible {
-    outline: 3px solid var(--color-vermilion);
+    outline: 3px solid var(--color-charcoal);
     outline-offset: 3px;
+    box-shadow: 0 0 0 3px #ffffff;
   }
   .on-dark :focus-visible {
     outline-color: #ffffff;
+    box-shadow: 0 0 0 3px var(--color-ink);
+  }
+  /* Programmatic focus targets (skip-link destination, form outcome messages)
+     are not controls: move focus there without drawing a ring. */
+  [tabindex="-1"]:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 }
 
@@ -83,7 +136,10 @@
     padding-inline: var(--gutter);
   }
 
-  /* Service rows: whole row is the button; arrow is the visible affordance. */
+  /*
+   * Service rows: the title button stretches over the whole row, so the row
+   * is one large target; the arrow is the visible affordance.
+   */
   .svc-row {
     transition: background-color 0.2s ease;
   }
@@ -97,35 +153,22 @@
     background: rgb(255 255 255 / 0.035);
   }
   .svc-row:hover .svc-arrow,
-  .svc-row:focus-visible .svc-arrow {
+  .svc-row:has(:focus-visible) .svc-arrow {
     background: var(--color-vermilion);
     border-color: var(--color-vermilion);
     transform: translateX(3px);
   }
   [dir="rtl"] .svc-row:hover .svc-arrow,
-  [dir="rtl"] .svc-row:focus-visible .svc-arrow {
+  [dir="rtl"] .svc-row:has(:focus-visible) .svc-arrow {
     transform: translateX(-3px);
   }
-  .svc-row:focus-visible {
+  .svc-row:has(:focus-visible) {
     outline: 3px solid #ffffff;
     outline-offset: -3px;
-    border-radius: 12px;
   }
-
-  /* Approval stepper: four columns, vertical list on phones. */
-  @media (max-width: 640px) {
-    .stepper {
-      grid-template-columns: 1fr !important;
-      gap: 12px !important;
-    }
-    .stepper > * {
-      flex-direction: row !important;
-      align-items: center !important;
-      gap: 12px !important;
-    }
-    .step-line {
-      display: none !important;
-    }
+  .svc-row :focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 
   .photo-mirror {
@@ -144,7 +187,7 @@
     animation: none !important;
   }
   .svc-row:hover .svc-arrow,
-  .svc-row:focus-visible .svc-arrow {
+  .svc-row:has(:focus-visible) .svc-arrow {
     transform: none !important;
   }
 }
