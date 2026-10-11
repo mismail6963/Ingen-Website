@@ -3,10 +3,11 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { notFound } from "next/navigation";
+import { lang as rootLang } from "next/root-params";
 import { StructuredData } from "@/components/site/StructuredData";
 import { getDictionary } from "@/content";
 import { dirFor, isLocale, locales } from "@/lib/i18n";
-import { SITE_URL } from "@/lib/site";
+import { IS_NON_PRODUCTION_DEPLOYMENT, SITE_URL } from "@/lib/site";
 import "../globals.css";
 
 const ingenSans = localFont({
@@ -26,7 +27,12 @@ const plexArabic = localFont({
   ],
   variable: "--font-plex-arabic",
   display: "swap",
-  fallback: ["system-ui", "sans-serif"],
+  // No fallback list and no metric-adjusted Arial face: this variable is put
+  // *first* in the Arabic stack (see globals.css), so it must contain only
+  // IBM Plex Sans Arabic. Anything after it would capture Arabic glyphs first
+  // (a local Arial with Arabic glyphs did, on Windows and macOS).
+  fallback: [],
+  adjustFontFallback: false,
 });
 
 const ASSET_RECOVERY =
@@ -36,28 +42,17 @@ export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
 }
 
-export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
-  const { lang } = await params;
+/** Shared metadata. Page-specific canonical, alternates and Open Graph live in each page. */
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await rootLang();
   if (!isLocale(lang)) return {};
   const t = getDictionary(lang);
   return {
     metadataBase: new URL(SITE_URL),
     title: t.meta.title,
     description: t.meta.description,
-    alternates: {
-      canonical: `/${lang}`,
-      languages: { en: "/en", ar: "/ar", "x-default": "/en" },
-    },
-    openGraph: {
-      type: "website",
-      siteName: "Ingen",
-      title: t.meta.title,
-      description: t.meta.description,
-      locale: lang === "ar" ? "ar_SA" : "en_GB",
-      url: `/${lang}`,
-      images: [{ url: "/photos/ingen-photo-1.jpg", width: 2400, height: 1357 }],
-    },
-    twitter: { card: "summary_large_image" },
+    openGraph: { siteName: "Ingen", locale: lang === "ar" ? "ar_SA" : "en_GB" },
+    ...(IS_NON_PRODUCTION_DEPLOYMENT ? { robots: { index: false, follow: false } } : {}),
   };
 }
 
@@ -65,8 +60,11 @@ export const viewport: Viewport = {
   themeColor: "#202322",
 };
 
-export default async function RootLayout({ children, params }: LayoutProps<"/[lang]">) {
-  const { lang } = await params;
+export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
+  // Read only the language (a root param known at build time), not the whole
+  // params object: unknown paths under /en and /ar (the 404 catch-all) can
+  // then be prerendered in full instead of as an empty shell.
+  const lang = await rootLang();
   if (!isLocale(lang)) notFound();
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { ENQUIRY_FORM_HASH } from "@/lib/sections";
 
 type EnquiryContextValue = {
   formOpen: boolean;
@@ -22,8 +23,8 @@ export function revealForm(form: HTMLElement | null, field: HTMLInputElement | n
 }
 
 /**
- * Every "Discuss your project" control on the page calls openForm, so all of
- * them lead to the same enquiry form.
+ * Every "Tell us about your project" control on the page calls openForm, so
+ * all of them lead to the same enquiry form.
  */
 export function EnquiryProvider({ children }: { children: React.ReactNode }) {
   const [formOpen, setFormOpen] = useState(false);
@@ -38,6 +39,18 @@ export function EnquiryProvider({ children }: { children: React.ReactNode }) {
     },
     [formOpen],
   );
+
+  // Arriving with #enquiry-form (a link from another page, or a language
+  // switch made while in the form) opens the form, as does following such a
+  // link on this page.
+  useEffect(() => {
+    const fromHash = () => {
+      if (window.location.hash === ENQUIRY_FORM_HASH) setFormOpen(true);
+    };
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+    return () => window.removeEventListener("hashchange", fromHash);
+  }, []);
 
   const value = useMemo(() => ({ formOpen, openForm, formRef, firstFieldRef }), [formOpen, openForm]);
   return <EnquiryContext.Provider value={value}>{children}</EnquiryContext.Provider>;

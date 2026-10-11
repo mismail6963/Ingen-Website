@@ -9,7 +9,7 @@ import { LIMITS, MAX_ATTACHMENT_BYTES, validateEnquiry, type EnquiryFields, type
  * Required environment variables (see .env.example):
  *   RESEND_API_KEY  - Resend API key
  *   ENQUIRY_TO      - inbox that receives enquiries (comma-separate several)
- *   ENQUIRY_FROM    - verified sender, e.g. "Ingen website <website@ingensolutions.com>"
+ *   ENQUIRY_FROM    - sender on a domain verified in Resend, e.g. "Ingen website <website@ingensoloutions.com>"
  *   (LEAD_TO_EMAIL / RESEND_FROM from the old nashr.net setup also work.)
  *
  * If any are missing the route answers `not_configured` and the form tells

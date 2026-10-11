@@ -14,7 +14,7 @@ export function Faq({ locale }: { locale: Locale }) {
       <div className="page-container flex flex-wrap gap-x-20 gap-y-10">
         <div className="flex flex-[1_1_300px] flex-col gap-[22px]">
           <Eyebrow>{t.eyebrow}</Eyebrow>
-          <h2 id="faq-title" className="m-0 text-[clamp(34px,4vw,58px)] font-bold leading-[1.08]">
+          <h2 id="faq-title" className="m-0 text-[clamp(34px,4vw,58px)] font-bold leading-title">
             {t.title}
           </h2>
         </div>
@@ -30,7 +30,7 @@ export function Faq({ locale }: { locale: Locale }) {
                     aria-expanded={open}
                     aria-controls={`faq-p${i}`}
                     onClick={() => setOpenIndex(open ? -1 : i)}
-                    className="flex min-h-[72px] w-full items-center justify-between gap-6 border-0 bg-transparent py-[22px] text-start text-[clamp(19px,1.7vw,23px)] font-bold leading-[1.3] text-charcoal hover:text-vermilion"
+                    className="flex min-h-[72px] w-full items-center justify-between gap-6 border-0 bg-transparent py-[22px] text-start text-[clamp(19px,1.7vw,23px)] font-bold leading-heading text-charcoal hover:text-vermilion-deep"
                   >
                     <span>{item.q}</span>
                     <span
@@ -43,7 +43,7 @@ export function Faq({ locale }: { locale: Locale }) {
                 </h3>
                 {open ? (
                   <div id={`faq-p${i}`} role="region" aria-labelledby={`faq-b${i}`} className="pb-7 pe-[clamp(0px,4vw,64px)]">
-                    <p className="m-0 text-[17px] leading-[1.6] text-soft">{item.a}</p>
+                    <p className="m-0 max-w-[60ch] text-body leading-body text-soft">{item.a}</p>
                   </div>
                 ) : null}
               </div>
