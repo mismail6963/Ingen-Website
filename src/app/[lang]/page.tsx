@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]">): Promis
 /**
  * Homepage. Section order (revised after the October 2026 audit): hero,
  * services, demo, how we work (stages + commitments, formerly the separate
- * Company and Approach sections), FAQ, enquiry. Verified proof, selected work
+ * Company and Approach sections), enquiry, FAQ (under the form). Verified proof, selected work
  * and team sections slot in after the hero, demo and how-we-work respectively
  * once approved content exists. SECTION_IDS in lib/sections.ts follows this order.
  */
@@ -36,8 +36,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <Services locale={lang} />
         <DemoSection locale={lang} />
         <Approach locale={lang} />
-        <Faq locale={lang} />
         <Enquiry locale={lang} />
+        <Faq locale={lang} />
       </main>
       <Footer locale={lang} />
     </EnquiryProvider>
