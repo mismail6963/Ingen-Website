@@ -201,7 +201,7 @@ contrast ≥ 4.5:1 for body text.
 
 Section order (revised October 2026): hero, services, demo, how we work
 (delivery stages plus commitments; formerly separate Company and Approach
-sections), FAQ, enquiry. Navigation, footer and `SECTION_IDS` follow the same
+sections), enquiry, FAQ (under the form). Navigation, footer and `SECTION_IDS` follow the same
 order. Verified proof, selected work and team sections, once the client
 supplies approved material, go after the hero, after the demo and after how we
 work respectively. Never add empty or placeholder versions of them.

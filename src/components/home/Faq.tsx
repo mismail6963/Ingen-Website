@@ -10,7 +10,7 @@ export function Faq({ locale }: { locale: Locale }) {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section id="faq" aria-labelledby="faq-title" className="py-[clamp(120px,12vw,192px)]">
+    <section id="faq" aria-labelledby="faq-title" className="pt-[clamp(96px,10vw,160px)]">
       <div className="page-container flex flex-wrap gap-x-20 gap-y-10">
         <div className="flex flex-[1_1_300px] flex-col gap-[22px]">
           <Eyebrow>{t.eyebrow}</Eyebrow>
