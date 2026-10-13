@@ -266,7 +266,7 @@ const en = {
     short: "WhatsApp",
     newTab: "(opens WhatsApp in a new tab)",
     // Pre-filled first message in the visitor's WhatsApp.
-    message: "Hello Ingen, I'd like to discuss a project.",
+    message: "Hello Ingen team, I visited your website and would like to discuss my project and learn more about your services and how you could help.",
   },
 
   footer: {
