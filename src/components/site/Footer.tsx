@@ -1,5 +1,6 @@
 import { DiscussLink } from "@/components/home/EnquiryProvider";
 import { LanguageSwitch } from "@/components/site/LanguageSwitch";
+import { WhatsAppLink } from "@/components/site/WhatsAppLink";
 import { getDictionary } from "@/content";
 import type { Locale } from "@/lib/i18n";
 
@@ -28,6 +29,7 @@ export function Footer({ locale }: { locale: Locale }) {
             <div className="flex flex-col gap-0.5">
               <span className={heading}>{t.contact}</span>
               <DiscussLink className={link}>{d.nav.cta}</DiscussLink>
+              <WhatsAppLink locale={locale} label="short" className={`${link} gap-2`} />
             </div>
             <div className="flex flex-col gap-0.5">
               <span className={heading}>{t.language}</span>

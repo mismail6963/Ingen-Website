@@ -58,6 +58,7 @@ src/
     site.ts               SITE_URL (production origin), preview detection, OG image paths
     metadata.ts           pageMetadata(): canonical, hreflang, Open Graph, Twitter per page
     sections.ts           homepage section anchors in page order (nav, footer, language switch)
+    contact.ts            WHATSAPP_NUMBER (client-supplied; empty hides every WhatsApp button)
   proxy.ts                redirects un-prefixed paths to /en or /ar
   fonts/                  Ingen Sans + IBM Plex Sans Arabic (OFL licences included)
 public/
@@ -144,7 +145,9 @@ Ingen has one real project and the client can't be named. So:
 - Don't imply certifications or regulatory compliance.
 - Don't claim every project includes Arabic and English.
 - Don't invent contact details (phone, address, email). Leave them out until
-  the client supplies real ones.
+  the client supplies real ones. The WhatsApp number lives in
+  `src/lib/contact.ts`; `<WhatsAppLink>` renders nothing while it is empty.
+  The client decided against a direct-email button (October 2026).
 - Demonstrations are labelled **"Concept demonstration"** and use clearly
   sample data, with a note that they are not client projects.
 - The company statement was: "A Riyadh-based software and AI company,
@@ -171,8 +174,10 @@ Ingen has one real project and the client can't be named. So:
   opens the same form, scrolls to it and focuses the Name field. New pages
   that need a contact action should use `<DiscussLink>` or link to
   `/{lang}#enquiry-form` (that hash opens the form on load).
-- Keep it short: three required fields (name, email, description) plus the
-  optional-details toggle. The file picker is a visually hidden native input
+- Keep it short: four required fields (name, email, phone, description;
+  phone made required at the client's request, October 2026) plus the
+  optional-details toggle (budget, timing, document). The budget field has
+  no example value on purpose: the client found it put people off. The file picker is a visually hidden native input
   with a localized label as its button.
 - Success shows only after the API answers `{ ok: true }`. Repeat submits
   are ignored while one is in flight; a 413 from the host maps to the
@@ -182,7 +187,11 @@ Ingen has one real project and the client can't be named. So:
   until `docs/privacy-notice-draft.md` has been completed and approved.
 - `POST /api/enquiry` validates (same rules as the client), checks a
   honeypot, rate-limits per IP (best effort, in memory), and emails the
-  enquiry through Resend with an optional attachment up to 5 MB.
+  enquiry through Resend with an optional attachment up to 5 MB. The email
+  lists the visitor's email (mailto), phone (tel) and, when the country is
+  known, a wa.me link at the top; Reply goes to the visitor.
+- WhatsApp (`<WhatsAppLink>`) is the quieter second route: beside the main
+  CTA in the closing panel, under the form's intro and in the footer.
 - Set `RESEND_API_KEY`, `ENQUIRY_TO`, `ENQUIRY_FROM` (see `.env.example`). If
   they are missing the API returns `not_configured` and the form tells the
   visitor the enquiry could not be sent. Never show a success state that

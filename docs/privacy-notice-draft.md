@@ -14,7 +14,7 @@
 
 | Topic | What happens today | Source |
 |---|---|---|
-| Data collected by the enquiry form | Name, email, project description (required); organisation, approximate budget, desired timing, phone number, one attachment up to 5 MB (optional); the page language. A hidden spam-trap field. | `src/components/home/Enquiry.tsx`, `src/lib/enquiry.ts` |
+| Data collected by the enquiry form | Name, email, phone number, project description (required); organisation, approximate budget, desired timing, one attachment up to 5 MB (optional); the page language. A hidden spam-trap field. | `src/components/home/Enquiry.tsx`, `src/lib/enquiry.ts` |
 | Where it goes | Posted to the site's own API (`/api/enquiry`), which emails it through **Resend** (email delivery service) to the inbox(es) in `ENQUIRY_TO`, with the visitor's email as reply-to and the attachment included. | `src/app/api/enquiry/route.ts` |
 | Storage by the website | No database. The site does not store enquiries itself. Copies exist in the receiving inbox(es) and with the providers below. | same |
 | IP address | Used in server memory for a best-effort rate limit (5 enquiries per 10 minutes); not written to storage by the site. The hosting provider may log requests. | same |
@@ -23,6 +23,7 @@
 | Analytics | Vercel Web Analytics and Speed Insights scripts are loaded on every page. | `src/app/[lang]/layout.tsx` |
 | Browser storage | `sessionStorage` flags for a one-time reload if a script fails to load. No form data is stored in the browser. The site sets no cookies of its own. | `layout.tsx` (`ASSET_RECOVERY`) |
 | Confirmation email to the visitor | None is sent. | `route.ts` |
+| WhatsApp button | Opens WhatsApp (wa.me) with a pre-filled message; the conversation then happens in WhatsApp, outside the website. Shown only once Ingen sets a number. | `src/lib/contact.ts` |
 
 ## Information needed before this can be approved `[TO CONFIRM]`
 
@@ -45,7 +46,7 @@
 
 This notice explains how [legal entity name, TO CONFIRM] ("Ingen", "we") handles personal information sent through the enquiry form on this website.
 
-**What we collect.** When you send an enquiry, we receive the details you enter: your name, email address and a description of what you would like to build or improve, and, if you choose to add them, your organisation, an approximate budget, your desired timing, a phone number and one document. We also receive the language of the page you used.
+**What we collect.** When you send an enquiry, we receive the details you enter: your name, email address, phone number and a description of what you would like to build or improve, and, if you choose to add them, your organisation, an approximate budget, your desired timing and one document. If you message us on WhatsApp, that conversation takes place in WhatsApp. [TO CONFIRM: how WhatsApp messages are kept.] We also receive the language of the page you used.
 
 **How we use it.** We use these details to review your enquiry and to contact you about it. [TO CONFIRM: we do not use them for marketing or add them to mailing lists.]
 
@@ -71,7 +72,7 @@ This notice explains how [legal entity name, TO CONFIRM] ("Ingen", "we") handles
 
 يوضّح هذا الإشعار كيف تتعامل [اسم المنشأة القانوني — يُحدَّد لاحقًا] («Ingen» أو «نحن») مع البيانات الشخصية المرسلة عبر نموذج التواصل في هذا الموقع.
 
-**البيانات التي نتلقّاها.** عند إرسال طلبك نتلقّى البيانات التي تُدخلها: اسمك وبريدك الإلكتروني ووصفًا لما تودّ بناءه أو تحسينه، وإن اخترت إضافتها: اسم منشأتك والميزانية التقريبية والتوقيت المطلوب ورقم الهاتف ومستندًا واحدًا. كما نتلقّى لغة الصفحة التي استخدمتها.
+**البيانات التي نتلقّاها.** عند إرسال طلبك نتلقّى البيانات التي تُدخلها: اسمك وبريدك الإلكتروني ورقم هاتفك ووصفًا لما تودّ بناءه أو تحسينه، وإن اخترت إضافتها: اسم منشأتك والميزانية التقريبية والتوقيت المطلوب ومستندًا واحدًا. وإذا راسلتنا عبر واتساب فتجري المحادثة داخل تطبيق واتساب. [يُحدَّد لاحقًا: طريقة الاحتفاظ برسائل واتساب.] كما نتلقّى لغة الصفحة التي استخدمتها.
 
 **كيف نستخدمها.** نستخدم هذه البيانات لمراجعة طلبك والتواصل معك بشأنه. [يُحدَّد لاحقًا: لا نستخدمها لأغراض تسويقية ولا نضيفها إلى قوائم بريدية.]
 

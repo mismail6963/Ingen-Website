@@ -66,3 +66,17 @@ export function Paperclip() {
     </svg>
   );
 }
+
+/** Speech bubble with a handset: the WhatsApp contact route (a generic icon, not the WhatsApp logo). */
+export function ChatIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true" className="flex-none">
+      <path d="M9 1.75a7.25 7.25 0 0 0-6.3 10.83L1.75 16.25l3.77-.93A7.25 7.25 0 1 0 9 1.75z" strokeLinejoin="round" />
+      <path
+        d="M6.6 5.6c.2 0 .4 0 .55.37l.5 1.2c.05.13.03.28-.06.39l-.42.52c.5.95 1.25 1.68 2.2 2.18l.5-.42a.38.38 0 0 1 .4-.06l1.2.52c.35.15.37.33.36.53-.03.62-.55 1.27-1.32 1.27-2.6 0-4.86-2.27-4.86-4.86 0-.77.62-1.3 1.27-1.32z"
+        fill="currentColor"
+        stroke="none"
+      />
+    </svg>
+  );
+}
