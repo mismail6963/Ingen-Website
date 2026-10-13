@@ -192,8 +192,11 @@ Ingen has one real project and the client can't be named. So:
   known, a wa.me link at the top; Reply goes to the visitor.
 - WhatsApp (`<WhatsAppLink>`) is the quieter second route: beside the main
   CTA in the closing panel, under the form's intro and in the footer.
-- Set `RESEND_API_KEY`, `ENQUIRY_TO`, `ENQUIRY_FROM` (see `.env.example`). If
-  they are missing the API returns `not_configured` and the form tells the
+- Only `RESEND_API_KEY` must be set in the host (see `.env.example`).
+  Enquiries go to mohammed@ingensoloutions.com from
+  website@ingensoloutions.com by default (server-only constants in the API
+  route; `ENQUIRY_TO` / `ENQUIRY_FROM` override them). If the key is missing
+  the API returns `not_configured` and the form tells the
   visitor the enquiry could not be sent. Never show a success state that
   isn't true.
 

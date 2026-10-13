@@ -8,7 +8,7 @@
  * no "+", no leading 0 (for example a Saudi mobile 05X XXX XXXX becomes
  * "9665XXXXXXXX"). Empty: every WhatsApp button is hidden.
  */
-export const WHATSAPP_NUMBER = "";
+export const WHATSAPP_NUMBER = "966555987440"; // +966 55 598 7440, supplied by Ingen (October 2026)
 
 /** wa.me link that opens a chat with Ingen, with a pre-filled first message. */
 export function whatsappHref(message: string) {

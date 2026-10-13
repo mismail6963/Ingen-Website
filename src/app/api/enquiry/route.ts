@@ -8,17 +8,24 @@ import { LIMITS, MAX_ATTACHMENT_BYTES, validateEnquiry, type EnquiryFields, type
  * goes to the visitor (reply-to); the phone number is required and appears
  * at the top with call and WhatsApp links.
  *
- * Required environment variables (see .env.example):
- *   RESEND_API_KEY  - Resend API key
- *   ENQUIRY_TO      - inbox that receives enquiries (comma-separate several)
- *   ENQUIRY_FROM    - sender on a domain verified in Resend, e.g. "Ingen website <website@ingensoloutions.com>"
- *   (LEAD_TO_EMAIL / RESEND_FROM from the old nashr.net setup also work.)
+ * Environment variables (see .env.example):
+ *   RESEND_API_KEY  - Resend API key (required; a secret, set it in the host)
+ *   ENQUIRY_TO      - optional override of the inbox (comma-separate several);
+ *                     defaults to mohammed@ingensoloutions.com
+ *   ENQUIRY_FROM    - optional override of the sender (RESEND_FROM also
+ *                     accepted); defaults to website@ingensoloutions.com, which
+ *                     needs the domain verified in Resend
  *
- * If any are missing the route answers `not_configured` and the form tells
+ * Without RESEND_API_KEY the route answers `not_configured` and the form tells
  * the visitor it couldn't be sent. It never pretends an enquiry was delivered.
  */
 
 const json = (body: EnquiryResponse, status = 200) => Response.json(body, { status });
+
+// Defaults supplied by Ingen (October 2026). Server-only: never import these
+// into client code, or the address ends up in the page for spam bots.
+const DEFAULT_ENQUIRY_TO = "mohammed@ingensoloutions.com";
+const DEFAULT_ENQUIRY_FROM = "Ingen website <website@ingensoloutions.com>";
 
 // Best-effort rate limit per IP. On serverless hosts each instance has its own
 // memory, so treat this as a speed bump, not protection. Add a shared limiter
@@ -105,13 +112,17 @@ export async function POST(request: Request) {
     return json({ ok: false, reason: "attachment_too_large" }, 413);
   }
 
-  // LEAD_TO_EMAIL and RESEND_FROM are the names the nashr.net deployment
-  // already uses; accepted as fallbacks so the form works without renaming.
+  // Where enquiries go. ENQUIRY_TO in the host's settings overrides the
+  // default inbox. The nashr.net-era LEAD_TO_EMAIL is deliberately not used
+  // any more, so a leftover setting can't send enquiries to an old inbox.
+  // The sender may still come from the older RESEND_FROM name, which may be
+  // the address already verified in Resend; otherwise the default needs the
+  // ingensoloutions.com domain verified in Resend.
   const { RESEND_API_KEY } = process.env;
-  const ENQUIRY_TO = process.env.ENQUIRY_TO || process.env.LEAD_TO_EMAIL;
-  const ENQUIRY_FROM = process.env.ENQUIRY_FROM || process.env.RESEND_FROM;
+  const ENQUIRY_TO = process.env.ENQUIRY_TO || DEFAULT_ENQUIRY_TO;
+  const ENQUIRY_FROM = process.env.ENQUIRY_FROM || process.env.RESEND_FROM || DEFAULT_ENQUIRY_FROM;
   if (!RESEND_API_KEY || !ENQUIRY_TO || !ENQUIRY_FROM) {
-    console.warn("[enquiry] Not configured: set RESEND_API_KEY, ENQUIRY_TO and ENQUIRY_FROM.");
+    console.warn("[enquiry] Not configured: set RESEND_API_KEY in the host's environment settings.");
     return json({ ok: false, reason: "not_configured" }, 503);
   }
 
