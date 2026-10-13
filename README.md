@@ -20,9 +20,11 @@ rest of the site.
 
 ## Deploying
 
-Any Next.js host works (Vercel is simplest). Set `RESEND_API_KEY`,
-`ENQUIRY_TO` and `ENQUIRY_FROM` in the host's environment settings. Verify the
-sending domain in Resend before going live (it must be a domain Ingen owns).
+Any Next.js host works (Vercel is simplest). Set `RESEND_API_KEY` in the
+host's environment settings and verify `ingensoloutions.com` in Resend.
+Enquiries go to mohammed@ingensoloutions.com from
+website@ingensoloutions.com by default; `ENQUIRY_TO` / `ENQUIRY_FROM` override
+them.
 
 `NEXT_PUBLIC_SITE_URL` is no longer used: canonical links, hreflang, Open
 Graph, structured data, the sitemap and robots.txt all come from `SITE_URL` in
@@ -44,8 +46,8 @@ This repo used to hold the NASHR site. These production fixes were kept:
   from the edge, and skips `/_vercel` so Analytics keeps working.
 - `src/app/[lang]/layout.tsx`: reload-once recovery if a JS chunk fails to
   load, Vercel Analytics and Speed Insights, JSON-LD structured data.
-- `/api/enquiry` also accepts the old env names `LEAD_TO_EMAIL` and
-  `RESEND_FROM`, so the existing Vercel settings keep the form working.
+- `/api/enquiry` still accepts the old sender name `RESEND_FROM`. The old
+  `LEAD_TO_EMAIL` is no longer read, so enquiries can't go to an old inbox.
 
 ## Licences
 

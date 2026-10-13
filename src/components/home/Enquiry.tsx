@@ -7,6 +7,8 @@ import { getDictionary } from "@/content";
 import { MAX_ATTACHMENT_BYTES, validateEnquiry, type EnquiryErrors, type EnquiryResponse } from "@/lib/enquiry";
 import type { Locale } from "@/lib/i18n";
 import closingPhoto from "../../../public/photos/ingen-photo-8.jpg";
+import { WhatsAppLink } from "@/components/site/WhatsAppLink";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 import { revealForm, useEnquiry } from "./EnquiryProvider";
 
 type FailureReason = keyof ReturnType<typeof getDictionary>["form"]["failure"];
@@ -44,17 +46,24 @@ export function Enquiry({ locale }: { locale: Locale }) {
             {d.closing.title}
           </h2>
           <p className="m-0 max-w-[32em] text-[clamp(17px,1.5vw,20px)] leading-body text-on-dark">{d.closing.lead}</p>
-          {!formOpen ? (
-            <button
-              type="button"
-              aria-expanded={false}
-              aria-controls="enquiry-form"
-              onClick={openForm}
-              className="inline-flex min-h-14 items-center gap-2.5 self-start rounded-full border-0 bg-vermilion px-[30px] text-body font-bold text-white transition-colors hover:bg-vermilion-deep"
-            >
-              {d.nav.cta} <ArrowUpRight />
-            </button>
-          ) : null}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            {!formOpen ? (
+              <button
+                type="button"
+                aria-expanded={false}
+                aria-controls="enquiry-form"
+                onClick={openForm}
+                className="inline-flex min-h-14 items-center gap-2.5 rounded-full border-0 bg-vermilion px-[30px] text-body font-bold text-white transition-colors hover:bg-vermilion-deep"
+              >
+                {d.nav.cta} <ArrowUpRight />
+              </button>
+            ) : null}
+            {/* Second, quieter route: one primary action stays the form. */}
+            <WhatsAppLink
+              locale={locale}
+              className="inline-flex min-h-14 items-center gap-2.5 rounded-full border border-white/60 px-6 text-body font-bold text-white transition-colors hover:bg-white/10"
+            />
+          </div>
         </div>
       </section>
 
@@ -111,7 +120,7 @@ function EnquiryForm({ locale }: { locale: Locale }) {
   };
 
   const msg = (key: EnquiryErrors[keyof EnquiryErrors]) => (key ? t.messages[key] : "");
-  const errorList = (["name", "email", "need"] as const).filter((k) => errors[k]).map((k) => ({ k, text: msg(errors[k]) }));
+  const errorList = (["name", "email", "phone", "need"] as const).filter((k) => errors[k]).map((k) => ({ k, text: msg(errors[k]) }));
 
   function chooseFile(e: React.ChangeEvent<HTMLInputElement>) {
     setFile(e.target.files?.[0] ?? null);
@@ -198,6 +207,15 @@ function EnquiryForm({ locale }: { locale: Locale }) {
           {t.title}
         </h2>
         <p className="m-0 text-body leading-body text-muted">{t.lead}</p>
+        {WHATSAPP_NUMBER ? (
+          <p className="m-0 flex flex-wrap items-center gap-x-2 pt-2 text-body leading-body">
+            <span className="text-muted">{getDictionary(locale).whatsapp.prefer}</span>
+            <WhatsAppLink
+              locale={locale}
+              className="inline-flex min-h-11 items-center gap-2 font-bold text-charcoal underline underline-offset-4 hover:text-vermilion-deep"
+            />
+          </p>
+        ) : null}
       </div>
 
       <dl className="m-0 flex flex-col gap-5 self-start text-base leading-body min-[900px]:col-start-1 min-[900px]:row-start-2">
@@ -329,11 +347,41 @@ function EnquiryForm({ locale }: { locale: Locale }) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="f-org" className={label}>
-                {t.org} <span className="font-normal text-muted">{t.optional}</span>
-              </label>
-              <input id="f-org" name="org" type="text" autoComplete="organization" maxLength={160} value={values.org} onChange={set("org")} className={`${field} ${okBorder}`} />
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(220px,100%),1fr))] gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="f-phone" className={label}>
+                  {t.phone} <span className="font-normal text-muted">{t.required}</span>
+                </label>
+                <input
+                  id="f-phone"
+                  name="phone"
+                  type="tel"
+                  dir="ltr"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  maxLength={40}
+                  value={values.phone}
+                  onChange={set("phone")}
+                  aria-required="true"
+                  aria-invalid={!!errors.phone}
+                  aria-describedby={`f-phone-hint${errors.phone ? " f-phone-err" : ""}`}
+                  className={`${field} rtl:text-right ${errors.phone ? badBorder : okBorder}`}
+                />
+                <span id="f-phone-hint" className="text-sm text-muted">
+                  {t.phoneHint}
+                </span>
+                {errors.phone ? (
+                  <FieldError id="f-phone-err" prefix={t.errorPrefix}>
+                    {msg(errors.phone)}
+                  </FieldError>
+                ) : null}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="f-org" className={label}>
+                  {t.org} <span className="font-normal text-muted">{t.optional}</span>
+                </label>
+                <input id="f-org" name="org" type="text" autoComplete="organization" maxLength={160} value={values.org} onChange={set("org")} className={`${field} ${okBorder}`} />
+              </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -396,7 +444,6 @@ function EnquiryForm({ locale }: { locale: Locale }) {
                       inputMode="text"
                       autoComplete="off"
                       maxLength={80}
-                      placeholder={t.budgetPlaceholder}
                       value={values.budget}
                       onChange={set("budget")}
                       aria-describedby="f-budget-hint"
@@ -417,24 +464,6 @@ function EnquiryForm({ locale }: { locale: Locale }) {
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label htmlFor="f-phone" className="text-small font-bold">
-                    {t.phone}
-                  </label>
-                  <input
-                    id="f-phone"
-                    name="phone"
-                    type="tel"
-                    dir="ltr"
-                    autoComplete="tel"
-                    inputMode="tel"
-                    maxLength={40}
-                    value={values.phone}
-                    onChange={set("phone")}
-                    className={`${field} rtl:text-right ${okBorder}`}
-                  />
-                </div>
-
                 {/* File picker. The native input stays in the form (and in the tab
                     order) but is visually hidden; the localized label below acts as
                     its button, so no browser-language "Choose file" text appears. */}

@@ -217,15 +217,15 @@ const en = {
     need: "What would you like to build or improve?",
     needPlaceholder: "For example: our purchase approvals happen over email and we can't see where requests are stuck.",
     needHint: "A few sentences in your own words is fine.",
-    more: "Add budget, timing, phone or a document",
+    more: "Add budget, timing or a document",
     moreOptional: "(optional)",
     budget: "Approximate budget",
     currency: "SAR",
-    budgetPlaceholder: "e.g. 120,000",
     budgetHint: "In Saudi riyals. A rough figure or range is fine.",
     timing: "Desired timing",
     timingOptions: ["Flexible / Not sure yet", "Within 3 months", "In 3 to 6 months", "More than 6 months away"],
     phone: "Phone number",
+    phoneHint: "So we can call or message you about your enquiry.",
     file: "Existing brief or document",
     fileChoose: "Choose a file",
     fileReplace: "Choose a different file",
@@ -241,6 +241,8 @@ const en = {
       name: "Please enter your name.",
       emailEmpty: "Please enter your email address.",
       emailBad: "Please enter a valid email address, for example name@company.com.",
+      phoneEmpty: "Please enter your phone number.",
+      phoneBad: "Please enter a valid phone number: digits only, with the country code if you're outside Saudi Arabia.",
       need: "Please tell us briefly what you would like to build or improve.",
     },
     failure: {
@@ -255,6 +257,16 @@ const en = {
       text: "We will contact you using the details you provided.",
       back: "Send another enquiry",
     },
+  },
+
+  // WhatsApp contact. Only shown once a number is set in src/lib/contact.ts.
+  whatsapp: {
+    cta: "Message us on WhatsApp",
+    prefer: "Prefer WhatsApp?",
+    short: "WhatsApp",
+    newTab: "(opens WhatsApp in a new tab)",
+    // Pre-filled first message in the visitor's WhatsApp.
+    message: "Hello Ingen, I'd like to discuss a project.",
   },
 
   footer: {
